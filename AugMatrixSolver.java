@@ -34,12 +34,30 @@ public class AugMatrixSolver {
 		}
 
 		int prev = -1;
-		for (int i : pivotCols){
-			System.out.println(i);
+		for (int i = 0; i < pivotCols.length; i++){
+			if (pivotCols[i] <= prev){
+				//return false;
+				System.out.println("Found a pivot column too far left, not RREF");
+			}
+			if (!isPivotCol(i, pivotCols[i], m)){
+				//return false;
+				System.out.println(pivotCols[i] + " is not a pivot column");
+			}
+			prev = pivotCols[i];
 		}
 
 		return true;
-		
+	}
+
+	private static boolean isPivotCol(int pivRow, int col, int[][] m){
+		for (int i = 0; i < m.length; i++){
+			if (i != pivRow){
+				if (m[i][col] != 0){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private static int[][] loadMatrix(Scanner s){
