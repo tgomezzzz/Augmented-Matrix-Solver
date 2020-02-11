@@ -13,7 +13,7 @@ public class AugMatrixSolver {
 		while (!isRREF(matrix)){
 
 		}
-
+		System.out.println("exited loop");
 		s.close();
 
 	}
