@@ -10,11 +10,12 @@ public class AugMatrixSolver {
 
 		matrix = loadMatrix(s);	
 		
-		while (!isRREF(matrix)){
-
+		while (true){
+			if (isRREF(matrix)){
+				break;
+			}
 		}
-		System.out.println("exited loop");
-		System.out.println("test changes");
+
 		s.close();
 
 	}
@@ -68,19 +69,28 @@ public class AugMatrixSolver {
 
 			System.out.println("Enter the coefficients of the matrix, row by row.");
 			System.out.println("Enter 'd' when you're done.");
+
 			String input = s.nextLine();
+			String[] inputs = input.split(" ");
+			final int ROW_SIZE = inputs.length;
 			while (!input.equals("d")) {
 				try {
+					if (inputs.length != ROW_SIZE){
+						throw new Exception();
+					}
 					List<Integer> row = new LinkedList<>();
-					for (String str : input.split(" ")){
+					for (String str : inputs){
 						int t = Integer.parseInt(str);
 						row.add(t);
 					}
 					rows.add(row);
-				} catch (Exception e) {
+				} catch (NumberFormatException e) {
 					System.out.println("Error: matrix can only contain numerical values.");
+				} catch (Exception e){
+					System.out.println("Error: rows must all be the same length: " + ROW_SIZE);
 				}
 				input = s.nextLine();
+				inputs = input.split(" ");
 			}
 	
 			System.out.println("Is this the correct augmented matrix?");
@@ -101,6 +111,7 @@ public class AugMatrixSolver {
 				break;
 			}
 		}
+		
 		int[][] ret = new int[rows.size()][rows.get(0).size()];
 		for (int i = 0; i < ret.length; i++){
 			for  (int j  = 0; j < ret[0].length; j++){
