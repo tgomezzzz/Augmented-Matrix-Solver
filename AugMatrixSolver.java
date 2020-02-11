@@ -24,13 +24,23 @@ public class AugMatrixSolver {
 		//check indices of 1s, making sure they form a staircase
 		//check that everything else in the col is 0
 
+		//scan matrix row by row
+		//at the first non-zero or non-one value, call method to eliminate it and put that row into RREF form
+
+
 		int[] pivotCols = new int[m.length];
 		int ind = 0;
 		for (int i = 0; i < m.length; i++){
 			for (int j = 0; j < m[0].length; j++){
+				//if we see a one, mark it's column as a pivot column and continue to the next row
+				//if we see a zero, ignore it
+				//otherwise, reduce this row using row operations, and return false
 				if (m[i][j] == 1){
 					pivotCols[ind++] = j;
 					break;
+				} else if (m[i][j] != 0){
+					reduceRow(i, j, m);
+					return false;
 				}
 			}
 		}
@@ -60,6 +70,11 @@ public class AugMatrixSolver {
 			}
 		}
 		return true;
+	}
+
+	private static void reduceRow(int row, int col, int[][] m){
+		//to reduce this row, the value at m[i][j] needs to become 1
+		//scan col for the best value to reduce by (we need a difference of 1)
 	}
 
 	private static int[][] loadMatrix(Scanner s){
@@ -111,7 +126,7 @@ public class AugMatrixSolver {
 				break;
 			}
 		}
-		
+
 		int[][] ret = new int[rows.size()][rows.get(0).size()];
 		for (int i = 0; i < ret.length; i++){
 			for  (int j  = 0; j < ret[0].length; j++){
