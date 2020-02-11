@@ -14,6 +14,7 @@ public class AugMatrixSolver {
 
 		}
 		System.out.println("exited loop");
+		System.out.println("test changes");
 		s.close();
 
 	}
