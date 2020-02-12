@@ -72,6 +72,45 @@ public class AugMatrixSolver {
 		return true;
 	}
 
+	/**
+	 * swaps rows with the most leading zeroes to the bottom of the matrix
+	 * @param m the matrix
+	 */
+	private static void orderByZeroes(int[][] m){
+		HashMap<Integer, Integer> mostZeroes = new HashMap<>();
+		PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+		for (int i = 0; i < m.length; i++){
+			if (m[i][0] == 0){
+				int zeroes = 1;
+				for (int j = 1; j < m[i].length; j++){
+					if (m[i][j] != 0){
+						break;
+					} else {
+						zeroes++;
+					}
+				}
+				mostZeroes.put(zeroes, i);
+				maxHeap.offer(zeroes);
+			}
+		}
+
+		int lastRow = m.length - 1;
+		while (!maxHeap.isEmpty()){
+			int rowToSwap = mostZeroes.get(maxHeap.poll());
+			swapRows(rowToSwap, lastRow--, m);
+		}
+		
+	}
+
+	private static void swapRows(int r1, int r2, int[][] m){
+		if (r1 == r2){
+			return;
+		}
+		int[] t = m[r1];
+		m[r1] = m[r2];
+		m[r2] = t;
+	}
+
 	private static void reduceRow(int row, int col, int[][] m){
 		//to reduce this row, the value at m[i][j] needs to become 1
 		//scan col for the best value to reduce by (we need a difference of 1)
