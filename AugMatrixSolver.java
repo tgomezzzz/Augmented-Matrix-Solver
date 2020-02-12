@@ -7,12 +7,6 @@ public class AugMatrixSolver {
 		Scanner s = new Scanner(System.in);
 		int[][] matrix;
 
-		int[][] test = { {1, 1, 1, 1}, {0, 1, 0, 1}, {1, 1, 1, 1}, {0, 0, 0, 1}, {1, 1, 1, 1}, {1, 0, 0, 0} };
-		printMatrix(test);
-		orderByZeroes(test);
-		System.out.println();
-		printMatrix(test);
-
 		matrix = loadMatrix(s);	
 		
 		while (true){
@@ -119,6 +113,29 @@ public class AugMatrixSolver {
 	private static void reduceRow(int row, int col, int[][] m){
 		//to reduce this row, the value at m[i][j] needs to become 1
 		//scan col for the best value to reduce by (we need a difference of 1)
+
+		int toReduce = m[row][col];
+		for (int i = 0; i < m.length; i++){
+			if (toReduce % m[i][col] == 1 || toReduce - m[i][col] == 1){
+				subtractRows(row, i, toReduce / m[i][col], m);
+			} else if (toReduce + m[i][col] == 1){
+				//negative case
+			} 
+		}
+
+	}
+
+	/**
+	 * subtracts row subtractor from row target
+	 * @param target the row to subtract from
+	 * @param subtractor the row whose values are subtracted
+	 * @param k a constant that multiplies values in subtractor
+	 * @param m the matrix
+	 */
+	private static void subtractRows(int target, int subtractor, int k, int[][] m){
+		for (int i = 0; i < m[0].length; i++){
+			m[target][i] -= (k * m[subtractor][i]);
+		}
 	}
 
 	private static int[][] loadMatrix(Scanner s){
