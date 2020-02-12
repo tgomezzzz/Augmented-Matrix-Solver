@@ -1,12 +1,17 @@
 import java.util.*;
 
-import javax.swing.ImageIcon;
 public class AugMatrixSolver {
 
 	public static void main(String[] bears) {
 
 		Scanner s = new Scanner(System.in);
 		int[][] matrix;
+
+		int[][] test = { {1, 1, 1, 1}, {0, 1, 0, 1}, {1, 1, 1, 1}, {0, 0, 0, 1}, {1, 1, 1, 1}, {1, 0, 0, 0} };
+		printMatrix(test);
+		orderByZeroes(test);
+		System.out.println();
+		printMatrix(test);
 
 		matrix = loadMatrix(s);	
 		
@@ -99,7 +104,7 @@ public class AugMatrixSolver {
 			int rowToSwap = mostZeroes.get(maxHeap.poll());
 			swapRows(rowToSwap, lastRow--, m);
 		}
-		
+
 	}
 
 	private static void swapRows(int r1, int r2, int[][] m){
@@ -173,5 +178,17 @@ public class AugMatrixSolver {
 			}
 		}
 		return ret;
+	}
+
+	public static void printMatrix(int[][] m){
+		for (int i = 0; i < m.length; i++){
+			for (int j = 0; j < m[0].length; j++){
+				System.out.print(m[i][j]);
+				if (j == m[0].length - 2){
+					System.out.print(" | ");
+				}
+			}
+			System.out.println();
+		}
 	}
 }	
