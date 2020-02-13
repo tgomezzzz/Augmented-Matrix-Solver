@@ -8,6 +8,8 @@ public class AugMatrixSolver {
 		int[][] matrix;
 
 		matrix = loadMatrix(s);	
+
+		Matrix ma = new Matrix();
 		
 		while (true){
 			if (isRREF(matrix)){
@@ -18,6 +20,8 @@ public class AugMatrixSolver {
 
 		System.out.println("The matrix in RREF form:");
 		printMatrix(matrix);
+
+		interpretRREFMatrix(matrix);
 
 		s.close();
 
