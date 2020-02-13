@@ -7,23 +7,17 @@ public class AugMatrixSolver {
 		Scanner s = new Scanner(System.in);
 		int[][] matrix;
 
-		System.out.println(2%-1);
-		System.out.println(-2%1);
-
-		int[][] test = { {-10, 0, 100, 0}, {3, 1, 2, 3} , {2, 3, 5, 6}, {1, 3, 4, 6}};
-		printMatrix(test);
-		reduceRow(0, 0, test);
-		printMatrix(test);
-		reduceRow(2, 0, test);
-		printMatrix(test);
-
 		matrix = loadMatrix(s);	
 		
 		while (true){
 			if (isRREF(matrix)){
 				break;
 			}
+			printMatrix(matrix);
 		}
+
+		System.out.println("The matrix in RREF form:");
+		printMatrix(matrix);
 
 		s.close();
 
@@ -42,7 +36,6 @@ public class AugMatrixSolver {
 		//at the first non-zero or non-one value, call method to eliminate it and put that row into RREF form
 		//***edge case: array with no leading non-zeroes (they could all be one)
 
-
 		int[] pivotCols = new int[m.length];
 		int ind = 0;
 		for (int i = 0; i < m.length; i++){
@@ -52,9 +45,11 @@ public class AugMatrixSolver {
 				//otherwise, reduce this row using row operations, and return false
 				if (m[i][j] == 1){
 					pivotCols[ind++] = j;
+					makePivotCol(i, j, m);
 					break;
 				} else if (m[i][j] != 0){
 					reduceRow(i, j, m);
+					printMatrix(m);
 					return false;
 				}
 			}
@@ -63,12 +58,11 @@ public class AugMatrixSolver {
 		int prev = -1;
 		for (int i = 0; i < pivotCols.length; i++){
 			if (pivotCols[i] <= prev){
-				//return false;
-				System.out.println("Found a pivot column too far left, not RREF");
+				orderByZeroes(m);
+				return false;
 			}
 			if (!isPivotCol(i, pivotCols[i], m)){
-				//return false;
-				System.out.println(pivotCols[i] + " is not a pivot column");
+				return false;
 			}
 			prev = pivotCols[i];
 		}
@@ -76,15 +70,38 @@ public class AugMatrixSolver {
 		return true;
 	}
 
+	/**
+	 * checks if a column is a pivot column or not
+	 * @param pivRow the row of the pivot entry
+	 * @param col the column to check
+	 * @param m the matrix
+	 * @return true if the column is a pivot column, false if not
+	 */
 	private static boolean isPivotCol(int pivRow, int col, int[][] m){
 		for (int i = 0; i < m.length; i++){
 			if (i != pivRow){
 				if (m[i][col] != 0){
 					return false;
 				}
+			} else if (m[i][col] != 1){
+				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * creates a pivot column after a row has been reduced by zeroing out all other values in the column
+	 * @param row the row that has been reduced
+	 * @param col the column of the pivot entry in row
+	 * @param m the matrix
+	 */
+	private static void makePivotCol(int row, int col, int[][] m){
+		for (int i = 0; i < m.length; i++){
+			if (i != row){
+				subtractRows(i, row, m[i][col], m);
+			}
+		}
 	}
 
 	/**
@@ -113,10 +130,18 @@ public class AugMatrixSolver {
 		while (!maxHeap.isEmpty()){
 			int rowToSwap = mostZeroes.get(maxHeap.poll());
 			swapRows(rowToSwap, lastRow--, m);
+			if (!maxHeap.isEmpty()){
+				mostZeroes.replace(maxHeap.peek(), rowToSwap);
+			}
 		}
-
 	}
 
+	/**
+	 * swaps two rows
+	 * @param r1 the first row
+	 * @param r2 the second row
+	 * @param m the matrix
+	 */
 	private static void swapRows(int r1, int r2, int[][] m){
 		if (r1 == r2){
 			return;
@@ -127,7 +152,7 @@ public class AugMatrixSolver {
 	}
 
 	/**
-	 * "reduces" a row by setting m[row][col] to 1 via subtractRows(), and updating the row with its proper values
+	 * "reduces" a row by setting m[row][col] to 1 via subtractRows(), and updates the row with its proper values
 	 * @param row the row to reduce
 	 * @param col the column of the value that is to be reduced to 1
 	 * @param m the matrix
@@ -138,6 +163,9 @@ public class AugMatrixSolver {
 
 		int toReduce = m[row][col];
 		for (int i = 0; i < m.length; i++){
+			if (col > 0 && m[i][col-1] != 0){
+				continue;
+			}
 			if (toReduce == -1){
 				multiplyRow(row, -1, m);
 				break;
@@ -158,7 +186,9 @@ public class AugMatrixSolver {
 				multiplyRow(row, -1, m);
 				subtractRows(row, i, -toReduce / m[i][col], m);
 				break;
-			} 
+			} else if (m[i][col] == 1){
+				subtractRows(row, i, toReduce-1, m);
+			}
 		}
 
 		makePivotCol(row, col, m);
@@ -272,5 +302,6 @@ public class AugMatrixSolver {
 			}
 			System.out.println();
 		}
+		System.out.println();
 	}
 }	
