@@ -7,6 +7,10 @@ public class AugMatrixSolver {
 		Scanner s = new Scanner(System.in);
 		int[][] matrix;
 
+		System.out.println( -10%3 );
+		System.out.println( 10%-3 );
+		System.out.println (-10/3);
+
 		matrix = loadMatrix(s);	
 		
 		while (true){
@@ -19,6 +23,11 @@ public class AugMatrixSolver {
 
 	}
 
+	/**
+	 * Checks if the matrix is in RREF form, and if it isn't, executes steps to put it in RREF form 
+	 * @param m the matrix
+	 * @return true if the matrix if in RREF form, false if not
+	 */
 	private static boolean isRREF(int[][] m){
 		//check indices of 1s, making sure they form a staircase
 		//check that everything else in the col is 0
@@ -110,19 +119,41 @@ public class AugMatrixSolver {
 		m[r2] = t;
 	}
 
+	/**
+	 * "reduces" a row by setting m[row][col] to 1 via subtractRows(), and updating the row with its proper values
+	 * @param row the row to reduce
+	 * @param col the column of the value that is to be reduced to 1
+	 * @param m the matrix
+	 */
 	private static void reduceRow(int row, int col, int[][] m){
 		//to reduce this row, the value at m[i][j] needs to become 1
 		//scan col for the best value to reduce by (we need a difference of 1)
 
 		int toReduce = m[row][col];
 		for (int i = 0; i < m.length; i++){
-			if (toReduce % m[i][col] == 1 || toReduce - m[i][col] == 1){
+			if (toReduce == 2 && m[i][col] == 1){
+				subtractRows(row, i, 1, m);
+			} else if (toReduce == 2 && m[i][col] == -1){
+				subtractRows(row, i, -1, m);
+			} else if (toReduce % m[i][col] == 1){
 				subtractRows(row, i, toReduce / m[i][col], m);
-			} else if (toReduce + m[i][col] == 1){
-				//negative case
+			} else if (toReduce % m[i][col] == -1){
+				multiplyRow(row, -1, m);
+				subtractRows(row, i, toReduce / m[i][col], m);
 			} 
 		}
 
+	}
+	/**
+	 * multiplies an entire row by a constant
+	 * @param r the target row
+	 * @param k the constant
+	 * @param m	the matrix
+	 */
+	private static void multiplyRow(int r, int k, int[][] m){
+		for (int i = 0; i < m[0].length; i++){
+			m[r][i] *= k;
+		}
 	}
 
 	/**
@@ -138,6 +169,11 @@ public class AugMatrixSolver {
 		}
 	}
 
+	/**
+	 * loads the matrix by asking the user to input its values entry by entry, row by row
+	 * @param s the scanner that gets user input
+	 * @return the entered matrix
+	 */
 	private static int[][] loadMatrix(Scanner s){
 		List<List<Integer>> rows;
 		while (true){
@@ -182,9 +218,14 @@ public class AugMatrixSolver {
 	
 			System.out.println("Enter 'y' to solve, or anything else to re-enter the matrix");
 			input = s.nextLine();
-	
+			
+
 			if (input.equals("y")){
-				break;
+				if (rows.size() > 0){
+					break;
+				} else {
+					System.out.println("Error: no matrix entered.");
+				}
 			}
 		}
 
@@ -197,6 +238,10 @@ public class AugMatrixSolver {
 		return ret;
 	}
 
+	/**
+	 * prints the matrix to standard output
+	 * @param m the matrix
+	 */
 	public static void printMatrix(int[][] m){
 		for (int i = 0; i < m.length; i++){
 			for (int j = 0; j < m[0].length; j++){
