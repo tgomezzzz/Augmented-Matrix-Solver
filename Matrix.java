@@ -33,8 +33,10 @@ public class Matrix {
 				//if we see a zero, ignore it
 				//otherwise, reduce this row using row operations, and return false
 				if (m[i][j] == 1){
-					pivotCols[ind++] = j;
-					makePivotCol(i, j);
+                    pivotCols[ind++] = j;
+                    if (!pivotColIndeces.contains(j)){
+                        makePivotCol(i, j);
+                    }
 					break;
 				} else if (m[i][j] != 0){
 					reduceRow(i, j);
@@ -110,9 +112,13 @@ public class Matrix {
 		//to reduce this row, the value at m[i][j] needs to become 1
 		//scan col for the best value to reduce by (we need a difference of 1)
 
-		double toReduce = m[row][col];
+        double toReduce = m[row][col];
+        if (isEmptyCol(row, col)){
+            multiplyRow(row, 1 / toReduce);
+            return;
+        }
 		for (int i = 0; i < NUM_ROWS; i++){
-			if (col > 0 && m[i][col-1] != 0){
+			if (!isValidReducerRow(i, col) || i == row){
 				continue;
 			}
 			if (toReduce == -1){
@@ -127,23 +133,41 @@ public class Matrix {
 				subtractRows(row, i, -1);
 				break;
 			} else if (toReduce % m[i][col] == 1){
+                //buggy
 				System.out.println("=1");
-				subtractRows(row, i, toReduce / m[i][col]);
+				subtractRows(row, i, Math.floor(toReduce / m[i][col]));
 				break;
 			} else if (toReduce % m[i][col] == -1){
+                //buggy
 				System.out.println("=-1");
 				multiplyRow(row, -1);
-				subtractRows(row, i, -toReduce / m[i][col]);
+				subtractRows(row, i, Math.floor(-toReduce / m[i][col]));
 				break;
 			} else if (m[i][col] == 1){
-				subtractRows(row, i, toReduce-1);
-			}
-		}
-
+                subtractRows(row, i, toReduce-1);
+                break;
+			} 
+        }
+        
 		makePivotCol(row, col);
 
     }
     
+    /**
+     * validates a row as a potential reducer by ensuring all values left of c are 0
+     * @param r the index of the row
+     * @param c the index of the starting column
+     * @return true if all elements left of c are 0, false otherwise
+     */
+    public boolean isValidReducerRow(int r, int c){
+        for (int i = c - 1; i > -1; i--){
+            if (m[r][i] != 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 	/**
 	 * swaps two rows
@@ -166,7 +190,7 @@ public class Matrix {
 	 * @param k the constant
 	 * @param m	the matrix
 	 */
-	private void multiplyRow(int r, int k){
+	private void multiplyRow(int r, double k){
 		for (int i = 0; i < NUM_COLS; i++){
 			m[r][i] *= k;
 		}
@@ -180,7 +204,7 @@ public class Matrix {
 	 * @param k a constant that multiplies values in subtractor
 	 */
 	private void subtractRows(int target, int subtractor, double k){
-        System.out.println("Subtracting row " + subtractor + " from row " + target + "with mulitplier " + k);
+        System.out.println("Subtracting row " + subtractor + " from row " + target + " with mulitplier " + k);
 		for (int i = 0; i < NUM_COLS; i++){
 			m[target][i] -= (k * m[subtractor][i]);
 		}
@@ -193,6 +217,13 @@ public class Matrix {
 	 * @param col the index of the column of the pivot entry in row
      * 	 */
 	private void makePivotCol(int row, int col){
+        System.out.println("running makePivotCol");
+        if (pivotColIndeces.contains(col)){
+            return;
+        }
+        if (m[row][col] != 1){
+            multiplyRow(row, 1 / m[row][col]);
+        }
 		for (int i = 0; i < NUM_ROWS; i++){
 			if (i != row){
 				subtractRows(i, row, m[i][col]);
@@ -226,6 +257,25 @@ public class Matrix {
         }
 		return true;
 	}
+
+
+    /**
+     * checks if a column is empty except for m[r][c]
+     * @param r the index of the row of the sole entry
+     * @param c the index of the column
+     * @return true if m[r][c] is the only non-zero entry in the column, false if not 
+     */
+    public boolean isEmptyCol(int r, int c){
+        for (int i = 0; i < NUM_ROWS; i++){
+            if (i != r){
+                if (m[i][c] != 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
     /**
 	 * loads the matrix by asking the user to input its values entry by entry, row by row

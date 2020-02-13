@@ -4,8 +4,6 @@ public class AugMatrixSolver {
 
 	public static void main(String[] bears) {
 
-		System.out.println( 1.0 == 1 );
-
 		Matrix m = new Matrix();
 		
 		int steps = 0;
@@ -15,9 +13,6 @@ public class AugMatrixSolver {
 			}
 			m.printMatrix();
 		}
-
-		System.out.println("The matrix in RREF form:");
-		//printMatrix(ma);
 
 		m.interpretRREFMatrix();
 
