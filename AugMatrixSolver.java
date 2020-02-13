@@ -24,6 +24,14 @@ public class AugMatrixSolver {
 	}
 
 	/**
+	 * determines and prints the meaning of the matrix in RREF form
+	 * @param m the matrix
+	 */
+	public static void interpretRREFMatrix(int[][] m){
+
+	}
+
+	/**
 	 * Checks if the matrix is in RREF form, and if it isn't, executes steps to put it in RREF form 
 	 * @param m the matrix
 	 * @return true if the matrix if in RREF form, false if not
