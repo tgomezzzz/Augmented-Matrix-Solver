@@ -7,9 +7,15 @@ public class AugMatrixSolver {
 		Scanner s = new Scanner(System.in);
 		int[][] matrix;
 
-		System.out.println( -10%3 );
-		System.out.println( 10%-3 );
-		System.out.println (-10/3);
+		System.out.println(2%-1);
+		System.out.println(-2%1);
+
+		int[][] test = { {-10, 0, 100, 0}, {3, 1, 2, 3} , {2, 3, 5, 6}, {1, 3, 4, 6}};
+		printMatrix(test);
+		reduceRow(0, 0, test);
+		printMatrix(test);
+		reduceRow(2, 0, test);
+		printMatrix(test);
 
 		matrix = loadMatrix(s);	
 		
@@ -34,6 +40,7 @@ public class AugMatrixSolver {
 
 		//scan matrix row by row
 		//at the first non-zero or non-one value, call method to eliminate it and put that row into RREF form
+		//***edge case: array with no leading non-zeroes (they could all be one)
 
 
 		int[] pivotCols = new int[m.length];
@@ -131,17 +138,30 @@ public class AugMatrixSolver {
 
 		int toReduce = m[row][col];
 		for (int i = 0; i < m.length; i++){
-			if (toReduce == 2 && m[i][col] == 1){
-				subtractRows(row, i, 1, m);
-			} else if (toReduce == 2 && m[i][col] == -1){
-				subtractRows(row, i, -1, m);
-			} else if (toReduce % m[i][col] == 1){
-				subtractRows(row, i, toReduce / m[i][col], m);
-			} else if (toReduce % m[i][col] == -1){
+			if (toReduce == -1){
 				multiplyRow(row, -1, m);
+				break;
+			} else if (toReduce == 2 && m[i][col] == 1){
+				System.out.println("2 and 1");
+				subtractRows(row, i, 1, m);
+				break;
+			} else if (toReduce == 2 && m[i][col] == -1){
+				System.out.println("2 and -1");	
+				subtractRows(row, i, -1, m);
+				break;
+			} else if (toReduce % m[i][col] == 1){
+				System.out.println("=1");
 				subtractRows(row, i, toReduce / m[i][col], m);
+				break;
+			} else if (toReduce % m[i][col] == -1){
+				System.out.println("=-1");
+				multiplyRow(row, -1, m);
+				subtractRows(row, i, -toReduce / m[i][col], m);
+				break;
 			} 
 		}
+
+		makePivotCol(row, col, m);
 
 	}
 	/**
@@ -245,9 +265,9 @@ public class AugMatrixSolver {
 	public static void printMatrix(int[][] m){
 		for (int i = 0; i < m.length; i++){
 			for (int j = 0; j < m[0].length; j++){
-				System.out.print(m[i][j]);
+				System.out.print(m[i][j] + " ");
 				if (j == m[0].length - 2){
-					System.out.print(" | ");
+					System.out.print("| ");
 				}
 			}
 			System.out.println();
