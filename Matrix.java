@@ -9,15 +9,14 @@ public class Matrix {
     private double[][] m;
     private int NUM_ROWS;
     private int NUM_COLS;
-    private HashSet<Integer> pivotColIndeces = new HashSet<>();
+    private int[] pivotCols;
 
 
 	/**
 	 * Checks if the matrix is in RREF form, and if it isn't, executes steps to put it in RREF form 
-	 * @param m the matrix
 	 * @return true if the matrix if in RREF form, false if not
 	 */
-	public boolean isRREF(){
+	public void doOperation(){
 		//check indices of 1s, making sure they form a staircase
 		//check that everything else in the col is 0
 
@@ -25,42 +24,57 @@ public class Matrix {
 		//at the first non-zero or non-one value, call method to eliminate it and put that row into RREF form
 		//***edge case: array with no leading non-zeroes (they could all be one)
 
-		int[] pivotCols = new int[NUM_ROWS];
-		int ind = 0;
+		//int[] pivotCols = new int[NUM_ROWS];
+		//int ind = 0;
 		for (int i = 0; i < NUM_ROWS; i++){
 			for (int j = 0; j < NUM_COLS; j++){
 				//if we see a one, mark it's column as a pivot column and continue to the next row
 				//if we see a zero, ignore it
 				//otherwise, reduce this row using row operations, and return false
 				if (m[i][j] == 1){
-                    pivotCols[ind++] = j;
-                    if (!pivotColIndeces.contains(j)){
+                    //pivotCols[ind++] = j;
+                    if (pivotCols[j] == -1){
+                        System.out.println("AAAA");
                         makePivotCol(i, j);
                     }
+                    System.out.println("hit the break");
 					break;
 				} else if (m[i][j] != 0){
 					reduceRow(i, j);
 					//printMatrix(m);
-					return false;
 				}
 			}
 		}
 
-		int prev = -1;
-		for (int i = 0; i < pivotCols.length; i++){
-			if (pivotCols[i] <= prev){
-				orderByZeroes();
-				return false;
-			}
-			if (!isPivotCol(i, pivotCols[i])){
-				return false;
-			}
-			prev = pivotCols[i];
-		}
-
-		return true;
     }
     
+
+    /**
+     * verifies that the matrix is in RREF 
+     * @return true if the matrix is in RREF, false otherwise
+     */
+    public boolean isRREF(){
+        orderByZeroes();
+        int prev = -1;
+        int pivotColCount = 0;
+        for (int i = 0; i < NUM_COLS; i++){
+            if (pivotCols[i] > -1){
+                if (!isPivotCol(pivotCols[i], i)){
+                    pivotColCount++;
+                    return false;
+                }
+                if (pivotCols[i] <= prev){
+                    return false;
+                }
+                prev = pivotCols[i];
+            } 
+        }
+        if (pivotColCount == 0){
+            return false;
+        }
+        return true;
+    }
+
 
     /**
 	 * determines and prints the meaning of the matrix in RREF form
@@ -218,7 +232,7 @@ public class Matrix {
      * 	 */
 	private void makePivotCol(int row, int col){
         System.out.println("running makePivotCol");
-        if (pivotColIndeces.contains(col)){
+        if (pivotCols[col] > -1){
             return;
         }
         if (m[row][col] != 1){
@@ -229,7 +243,7 @@ public class Matrix {
 				subtractRows(i, row, m[i][col]);
 			}
         }
-        pivotColIndeces.add(col);
+        pivotCols[col] = row;
 	}
 
 
@@ -240,7 +254,7 @@ public class Matrix {
 	 * @return true if the column is a pivot column, false if not
 	 */
 	private boolean isPivotCol(int pivRow, int col){
-        if (pivotColIndeces.contains(col)){
+        if (pivotCols[col] > -1){
             return true;
         }
 		for (int i = 0; i < NUM_ROWS; i++){
@@ -252,9 +266,7 @@ public class Matrix {
 				return false;
 			}
         }
-        if (!pivotColIndeces.contains(col)){
-            pivotColIndeces.add(col);
-        }
+        pivotCols[col] = pivRow;
 		return true;
 	}
 
@@ -340,7 +352,11 @@ public class Matrix {
 
         NUM_ROWS = rows.size();
         NUM_COLS = rows.get(0).size();
-		m = new double[NUM_ROWS][NUM_COLS];
+        m = new double[NUM_ROWS][NUM_COLS];
+        pivotCols = new int[NUM_COLS];
+        for (int i = 0; i < NUM_COLS; i++){
+            pivotCols[i] = -1;
+        }
 		for (int i = 0; i < NUM_ROWS; i++){
 			for  (int j  = 0; j < NUM_COLS; j++){
 				m[i][j] = rows.get(i).get(j);
