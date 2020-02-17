@@ -14,7 +14,6 @@ public class Matrix {
 
 	/**
 	 * Checks if the matrix is in RREF form, and if it isn't, executes steps to put it in RREF form 
-	 * @param m the matrix
 	 * @return true if the matrix if in RREF form, false if not
 	 */
 	public boolean isRREF(){
@@ -25,20 +24,30 @@ public class Matrix {
 		//at the first non-zero or non-one value, call method to eliminate it and put that row into RREF form
 		//***edge case: array with no leading non-zeroes (they could all be one)
 
+		if (pivotColIndeces.contains(NUM_COLS - 1)){
+			System.out.println("Matrix with no solutions detected!");
+			return true;
+		}
+
 		int[] pivotCols = new int[NUM_ROWS];
 		int ind = 0;
 		for (int i = 0; i < NUM_ROWS; i++){
 			for (int j = 0; j < NUM_COLS; j++){
-				//if we see a one, mark it's column as a pivot column and continue to the next row
-				//if we see a zero, ignore it
-				//otherwise, reduce this row using row operations, and return false
+				//if the current element is a 1...
 				if (m[i][j] == 1){
+					//and we are not looking at a pivot column...
+					if (!pivotColIndeces.contains(j)){
+						//make the column a pivot column, and return
+						makePivotCol(i, j);
+						return false;
+					}
+					//otherwise, the current element is a pivot entry, so remember it's column, and continue looking in the next row
 					pivotCols[ind++] = j;
-					makePivotCol(i, j);
 					break;
+				//if the element is not a 1 or a 0...
 				} else if (m[i][j] != 0){
+					//reduce the row, and return
 					reduceRow(i, j);
-					//printMatrix(m);
 					return false;
 				}
 			}
@@ -128,12 +137,12 @@ public class Matrix {
 				break;
 			} else if (toReduce % m[i][col] == 1){
 				System.out.println("=1");
-				subtractRows(row, i, toReduce / m[i][col]);
+				subtractRows(row, i, Math.floor(toReduce / m[i][col]));
 				break;
 			} else if (toReduce % m[i][col] == -1){
 				System.out.println("=-1");
 				multiplyRow(row, -1);
-				subtractRows(row, i, -toReduce / m[i][col]);
+				subtractRows(row, i, Math.floor(-toReduce / m[i][col]));
 				break;
 			} else if (m[i][col] == 1){
 				subtractRows(row, i, toReduce-1);
@@ -166,7 +175,7 @@ public class Matrix {
 	 * @param k the constant
 	 * @param m	the matrix
 	 */
-	private void multiplyRow(int r, int k){
+	private void multiplyRow(int r, double k){
 		for (int i = 0; i < NUM_COLS; i++){
 			m[r][i] *= k;
 		}
@@ -193,6 +202,10 @@ public class Matrix {
 	 * @param col the index of the column of the pivot entry in row
      * 	 */
 	private void makePivotCol(int row, int col){
+		System.out.println("running makePivotCol");
+		if (m[row][col] != 1){
+			multiplyRow(row, 1 / m[row][col]);
+		}
 		for (int i = 0; i < NUM_ROWS; i++){
 			if (i != row){
 				subtractRows(i, row, m[i][col]);

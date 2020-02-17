@@ -8,7 +8,7 @@ public class AugMatrixSolver {
 		
 		int steps = 0;
 		while (!m.isRREF() && steps++ < 10){
-			m.doOperation();
+			//m.doOperation();
 			m.printMatrix();
 		}
 
