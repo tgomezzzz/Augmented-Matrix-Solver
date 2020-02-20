@@ -7,7 +7,7 @@ public class Matrix {
     }
 
     private double[][] m;
-    private int NUM_ROWS;
+	private int NUM_ROWS;
 	private int NUM_COLS;
 		
 	//to save time, this HashMap maps a pivot entry's column to its row
@@ -99,15 +99,21 @@ public class Matrix {
 			for (int i = 0; i < NUM_COLS - 1; i++){
 				if (pivotEntries.containsKey(i)){
 					double[] rowSol = m[pivotEntries.get(i)];
-					StringBuilder sol = new StringBuilder("x" + (i+1) + " =");
+					StringBuilder sol = new StringBuilder("x" + (i+1) + " = ");
 					for (int j = i + 1; j < NUM_COLS - 1; j++){
 						if (rowSol[j] > 0){
-							sol.append(" - ");
+							if (j != i + 1){
+								sol.append(" - ");
+							} else {
+								sol.append("-");
+							}
 							if (rowSol[j] != 1){
 								sol.append(fmt(rowSol[j]));
 							}
 						} else if (rowSol[j] < 0){
-							sol.append(" + ");
+							if (j != i + 1){
+								sol.append(" + ");
+							}
 							if (rowSol[j] != -1){
 								sol.append(fmt(-rowSol[j]));
 							}
