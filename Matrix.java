@@ -11,6 +11,7 @@ public class Matrix {
 	private int NUM_COLS;
 		
 	//to save time, this HashMap maps a pivot entry's column to its row
+	//this allows the use of containsKey() to look up pivot columns in constant time
 	private HashMap<Integer, Integer> pivotEntries = new HashMap<>();
 
 
@@ -143,7 +144,11 @@ public class Matrix {
 	 */
     private void orderByZeroes(){
 		HashMap<Integer, Integer> mostZeroes = new HashMap<>();
-		PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+		PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+		int[] newRowPos = new int[NUM_ROWS];
+
+		double[][] ordered = new double[NUM_ROWS][NUM_COLS];
+		int nextIndex = 0;
 		for (int i = 0; i < NUM_ROWS; i++){
 			if (m[i][0] == 0){
 				int zeroes = 1;
@@ -155,18 +160,36 @@ public class Matrix {
 					}
 				}
 				mostZeroes.put(zeroes, i);
-				maxHeap.offer(zeroes);
+				minHeap.offer(zeroes);
+				//need to update pivotEntries
+			} else {
+				newRowPos[i] = nextIndex;
+				ordered[nextIndex++] = m[i];
 			}
 		}
 
-		int lastRow = m.length - 1;
-		while (!maxHeap.isEmpty()){
-			int rowToSwap = mostZeroes.get(maxHeap.poll());
-			swapRows(rowToSwap, lastRow--);
-			if (!maxHeap.isEmpty()){
-				mostZeroes.replace(maxHeap.peek(), rowToSwap);
-			}
+		while (!minHeap.isEmpty()){
+			int oldRow = mostZeroes.get(minHeap.poll());
+			newRowPos[oldRow] = nextIndex;
+			ordered[nextIndex++] = m[oldRow];
 		}
+
+		for (int i : pivotEntries.keySet()){
+			pivotEntries.replace(i, newRowPos[pivotEntries.get(i)]);
+		}
+		
+		m = ordered;
+		System.out.println("ordered array: ");
+		printMatrix();
+
+		// int lastRow = m.length - 1;
+		// while (!maxHeap.isEmpty()){
+		// 	int rowToSwap = mostZeroes.get(maxHeap.poll());
+		// 	swapRows(rowToSwap, lastRow--);
+		// 	if (!maxHeap.isEmpty()){
+		// 		mostZeroes.replace(maxHeap.peek(), rowToSwap);
+		// 	}
+		// }
     }
     
 
@@ -265,6 +288,9 @@ public class Matrix {
      */
 	private void makePivotCol(int row, int col){
 		System.out.println("running makePivotCol");
+		if (isPivotCol(row, col)){
+			return;
+		}
 		if (m[row][col] != 1){
 			multiplyRow(row, 1 / m[row][col]);
 		}
@@ -351,7 +377,6 @@ public class Matrix {
 			System.out.println("Enter 'y' to solve, or anything else to re-enter the matrix");
 			input = s.nextLine();
 			
-
 			if (input.equals("y")){
 				if (rows.size() > 0){
 					break;
@@ -361,7 +386,7 @@ public class Matrix {
 			}
 		}
 
-        NUM_ROWS = rows.size();
+    	NUM_ROWS = rows.size();
         NUM_COLS = rows.get(0).size();
 		m = new double[NUM_ROWS][NUM_COLS];
 		for (int i = 0; i < NUM_ROWS; i++){
