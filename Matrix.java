@@ -99,21 +99,25 @@ public class Matrix {
 			System.out.println();
 			for (int i = 0; i < NUM_COLS - 1; i++){
 				if (pivotEntries.containsKey(i)){
+					boolean firstEntrySeen = false;
 					double[] rowSol = m[pivotEntries.get(i)];
 					StringBuilder sol = new StringBuilder("x" + (i+1) + " = ");
 					for (int j = i + 1; j < NUM_COLS - 1; j++){
 						if (rowSol[j] > 0){
-							if (j != i + 1){
+							if (firstEntrySeen){
 								sol.append(" - ");
 							} else {
+								firstEntrySeen = true;
 								sol.append("-");
 							}
 							if (rowSol[j] != 1){
 								sol.append(fmt(rowSol[j]));
 							}
 						} else if (rowSol[j] < 0){
-							if (j != i + 1){
+							if (firstEntrySeen){
 								sol.append(" + ");
+							} else {
+								firstEntrySeen = true;
 							}
 							if (rowSol[j] != -1){
 								sol.append(fmt(-rowSol[j]));
@@ -124,11 +128,19 @@ public class Matrix {
 						}
 					}
 					if (rowSol[NUM_COLS - 1] > 0){
-						sol.append(" + ");
+						if (firstEntrySeen){
+							sol.append(" + ");
+						}
 						sol.append(fmt(rowSol[NUM_COLS - 1]));
 					} else if (rowSol[NUM_COLS - 1] < 0){
-						sol.append(" - ");
+						if (firstEntrySeen){
+							sol.append(" - ");
+						} else {
+							sol.append("-");
+						}
 						sol.append(fmt(-rowSol[NUM_COLS - 1]));
+					} else {
+						sol.append("0");
 					}
 					System.out.println(sol.toString());
 				} else {
@@ -161,7 +173,6 @@ public class Matrix {
 				}
 				mostZeroes.put(zeroes, i);
 				minHeap.offer(zeroes);
-				//need to update pivotEntries
 			} else {
 				newRowPos[i] = nextIndex;
 				ordered[nextIndex++] = m[i];
@@ -177,19 +188,8 @@ public class Matrix {
 		for (int i : pivotEntries.keySet()){
 			pivotEntries.replace(i, newRowPos[pivotEntries.get(i)]);
 		}
-		
-		m = ordered;
-		System.out.println("ordered array: ");
-		printMatrix();
 
-		// int lastRow = m.length - 1;
-		// while (!maxHeap.isEmpty()){
-		// 	int rowToSwap = mostZeroes.get(maxHeap.poll());
-		// 	swapRows(rowToSwap, lastRow--);
-		// 	if (!maxHeap.isEmpty()){
-		// 		mostZeroes.replace(maxHeap.peek(), rowToSwap);
-		// 	}
-		// }
+		m = ordered;
     }
     
 
@@ -212,19 +212,15 @@ public class Matrix {
 				multiplyRow(row, -1);
 				break;
 			} else if (toReduce == 2 && m[i][col] == 1){
-				System.out.println("2 and 1");
 				subtractRows(row, i, 1);
 				break;
 			} else if (toReduce == 2 && m[i][col] == -1){
-				System.out.println("2 and -1");	
 				subtractRows(row, i, -1);
 				break;
 			} else if (toReduce % m[i][col] == 1){
-				System.out.println("=1");
 				subtractRows(row, i, Math.floor(toReduce / m[i][col]));
 				break;
 			} else if (toReduce % m[i][col] == -1){
-				System.out.println("=-1");
 				multiplyRow(row, -1);
 				subtractRows(row, i, Math.floor(-toReduce / m[i][col]));
 				break;
@@ -235,7 +231,6 @@ public class Matrix {
 		}
 
 		makePivotCol(row, col);
-
     }
     
 
@@ -258,7 +253,6 @@ public class Matrix {
 	 * multiplies an entire row by a constant
 	 * @param r the index of the target row
 	 * @param k the constant
-	 * @param m	the matrix
 	 */
 	private void multiplyRow(int r, double k){
 		for (int i = 0; i < NUM_COLS; i++){
@@ -343,6 +337,7 @@ public class Matrix {
 			String input = s.nextLine();
 			String[] inputs = input.split(" ");
 			final int ROW_SIZE = inputs.length;
+			double sum = 0;
 			while (!input.equals("d")) {
 				try {
 					if (inputs.length != ROW_SIZE){
@@ -352,6 +347,7 @@ public class Matrix {
 					for (String str : inputs){
 						double t = Double.parseDouble(str);
 						row.add(t);
+						sum += t;
 					}
 					rows.add(row);
 				} catch (NumberFormatException e) {
@@ -361,6 +357,11 @@ public class Matrix {
 				}
 				input = s.nextLine();
 				inputs = input.split(" ");
+			}
+
+			if (sum == 0){
+				System.out.println("You've entered a zero matrix! Please re-enter the matrix values.");
+				continue;
 			}
 	
 			System.out.println("Is this the correct augmented matrix?");
