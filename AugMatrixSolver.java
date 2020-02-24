@@ -11,6 +11,7 @@ public class AugMatrixSolver {
 		}
 
 		m.interpretRREFMatrix();
+		System.out.println();
 
 	}
 }

@@ -237,21 +237,7 @@ public class Matrix {
 
 		makePivotCol(row, col);
 	}
-
-	/**
-	 * swaps two rows
-	 * 
-	 * @param r1 the index of the first row
-	 * @param r2 the index of the second row
-	 */
-	private void swapRows(int r1, int r2) {
-		if (r1 == r2) {
-			return;
-		}
-		double[] t = m[r1];
-		m[r1] = m[r2];
-		m[r2] = t;
-	}
+	
 
 	/**
 	 * multiplies an entire row by a constant
