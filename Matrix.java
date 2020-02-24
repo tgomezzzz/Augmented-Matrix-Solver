@@ -2,6 +2,19 @@ import java.util.*;
 
 public class Matrix {
 
+
+	/**** 
+	 *  known bug:
+	 * 
+	 * 2 3 3 0
+	 * 2 1 0 0
+	 * 1 2 1 0
+	 * 
+	 * fails because one row ends up being
+	 * -5 0 0 0, which results in no solution
+	 * 
+	 * */ 
+
 	public Matrix() {
 		loadMatrix();
 	}
@@ -28,7 +41,6 @@ public class Matrix {
 		// scan matrix row by row
 		// at the first non-zero or non-one value, call method to eliminate it and put
 		// that row into RREF form
-		// ***edge case: array with no leading non-zeroes (they could all be one)
 
 		// detects a matrix with no solutions
 		if (pivotEntries.containsKey(NUM_COLS - 1)) {
@@ -237,7 +249,7 @@ public class Matrix {
 
 		makePivotCol(row, col);
 	}
-	
+
 
 	/**
 	 * multiplies an entire row by a constant
