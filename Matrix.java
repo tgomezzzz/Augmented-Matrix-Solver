@@ -2,19 +2,6 @@ import java.util.*;
 
 public class Matrix {
 
-
-	/**** 
-	 *  known bug:
-	 * 
-	 * 2 3 3 0
-	 * 2 1 0 0
-	 * 1 2 1 0
-	 * 
-	 * fails because one row ends up being
-	 * -5 0 0 0, which results in no solution
-	 * 
-	 * */ 
-
 	public Matrix() {
 		loadMatrix();
 	}
@@ -222,7 +209,7 @@ public class Matrix {
 
 		double toReduce = m[row][col];
 		for (int i = 0; i < NUM_ROWS; i++) {
-			if (col > 0 && m[i][col - 1] != 0) {
+			if (!isValidReducerRow(i, col)) {
 				continue;
 			}
 			if (toReduce == -1) {
@@ -252,6 +239,24 @@ public class Matrix {
 
 
 	/**
+	 * Verifies that a row is safe to use as a reducer by ensuring that all of its entries left of col are 0.
+	 * This maintains RREF in the matrix by making sure that pivot columns are not changed.
+	 * 
+	 * @param row the index of the row
+	 * @param col the index of the column
+	 * @return true if the row is a safe reducer, false otherwise
+	 */
+	public boolean isValidReducerRow(int row, int col) {
+		for (int i = col - 1; i > -1; i--){
+			if (m[row][i] != 0){
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	/**
 	 * multiplies an entire row by a constant
 	 * 
 	 * @param r the index of the target row
@@ -271,7 +276,7 @@ public class Matrix {
 	 * @param k          a constant that multiplies values in subtractor
 	 */
 	private void subtractRows(int target, int subtractor, double k) {
-		System.out.println("Subtracting row " + subtractor + " from row " + target + "with mulitplier " + k);
+		System.out.println("Subtracting row " + subtractor + " from row " + target + " with mulitplier " + k);
 		for (int i = 0; i < NUM_COLS; i++) {
 			m[target][i] -= (k * m[subtractor][i]);
 		}
@@ -285,7 +290,6 @@ public class Matrix {
 	 * @param col the index of the column of the pivot entry in row
 	 */
 	private void makePivotCol(int row, int col) {
-		System.out.println("running makePivotCol");
 		if (isPivotCol(row, col)) {
 			return;
 		}
