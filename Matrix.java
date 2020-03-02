@@ -91,13 +91,17 @@ public class Matrix {
 			// these matrices have free variables with infinite solutions
 			System.out.println("The matrix has infinite solutions.");
 			String[] freeVarNames = { "s", "t", "r", "u", "v", "w", "q", "a", "b", "c", "d", "l", "m", "n", "p", "y",
-					"z", "f", "g", "h" };
+					"z", "f", "g", "h"};
 			HashMap<Integer, String> freeVars = new HashMap<>();
 			int currentName = 0;
 			for (int i = 0; i < NUM_COLS - 1; i++) {
 				if (!pivotEntries.containsKey(i)) {
 					System.out.println("x" + (i + 1) + " is a free variable.");
 					freeVars.put(i, freeVarNames[currentName++]);
+					if (currentName >= freeVarNames.length){
+						currentName = 0;
+						System.out.println("WARNING: duplicate free variable names being used");
+					}
 				}
 			}
 			System.out.println();
@@ -341,7 +345,8 @@ public class Matrix {
 			rows = new ArrayList<>();
 
 			System.out.println("Enter the coefficients of the matrix, row by row.");
-			System.out.println("Enter 'd' when you're done.");
+			System.out.println("Separate each entry with a space, and press [enter] to move on to the next row.");
+			System.out.println("Enter [d] when you're done.");
 
 			String input = s.nextLine();
 			String[] inputs = input.split(" ");
@@ -384,7 +389,7 @@ public class Matrix {
 				System.out.println();
 			}
 
-			System.out.println("Enter 'y' to solve, or anything else to re-enter the matrix");
+			System.out.println("Enter [y] to solve, or anything else to re-enter the matrix");
 			input = s.nextLine();
 
 			if (input.equals("y")) {
