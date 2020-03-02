@@ -212,29 +212,40 @@ public class Matrix {
 		// scan col for the best value to reduce by (we need a difference of 1)
 
 		double toReduce = m[row][col];
-		for (int i = 0; i < NUM_ROWS; i++) {
-			if (!isValidReducerRow(i, col)) {
-				continue;
-			}
-			if (toReduce == -1) {
-				multiplyRow(row, -1);
-				break;
-			} else if (toReduce == 2 && m[i][col] == 1) {
-				subtractRows(row, i, 1);
-				break;
-			} else if (toReduce == 2 && m[i][col] == -1) {
-				subtractRows(row, i, -1);
-				break;
-			} else if (toReduce % m[i][col] == 1) {
-				subtractRows(row, i, Math.floor(toReduce / m[i][col]));
-				break;
-			} else if (toReduce % m[i][col] == -1) {
-				multiplyRow(row, -1);
-				subtractRows(row, i, Math.floor(-toReduce / m[i][col]));
-				break;
-			} else if (m[i][col] == 1) {
-				subtractRows(row, i, toReduce - 1);
-				break;
+
+		if (toReduce == -1){
+			multiplyRow(row, -1);
+		} else {
+			int reducerRow = -1;
+			int multiplier = 0;
+			for (int i = 0; i < NUM_ROWS; i++) {
+				if (!isValidReducerRow(i, col) || i == row) {
+					continue;
+				}
+
+				int potentialReducer = m[i][col];
+				if (toReduce - potentialReducer == 1) {
+					reducerRow = i;
+					multiplier = potentialReducer;
+					break;
+				} else if (toReduce % potentialReducer == 1){
+					reducerRow = i;
+					multiplier = Math.floor(toReduce / potentialReducer);
+					break;
+				} else if (toReduce - potentialReducer == -1){
+
+				}
+				else if (toReduce == 2 && m[i][col] == -1) {
+					subtractRows(row, i, -1);
+					break;
+				} else if (toReduce % m[i][col] == -1) {
+					multiplyRow(row, -1);
+					subtractRows(row, i, Math.floor(-toReduce / m[i][col]));
+					break;
+				} else if (m[i][col] == 1) {
+					subtractRows(row, i, toReduce - 1);
+					break;
+				}
 			}
 		}
 
