@@ -4,6 +4,8 @@ public class AugMatrixSolver {
 
 	public static void main(String[] bears) {
 
+		System.out.println("------------------------------------------------------------");
+
 		Matrix m = new Matrix();
 
 		while (!m.isRREF()) {
@@ -12,6 +14,8 @@ public class AugMatrixSolver {
 
 		m.interpretRREFMatrix();
 		System.out.println();
+
+		System.out.println("------------------------------------------------------------");
 
 	}
 }

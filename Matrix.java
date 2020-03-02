@@ -217,13 +217,13 @@ public class Matrix {
 			multiplyRow(row, -1);
 		} else {
 			int reducerRow = -1;
-			int multiplier = 0;
+			double multiplier = 0;
 			for (int i = 0; i < NUM_ROWS; i++) {
 				if (!isValidReducerRow(i, col) || i == row) {
 					continue;
 				}
 
-				int potentialReducer = m[i][col];
+				double potentialReducer = m[i][col];
 				if (toReduce - potentialReducer == 1) {
 					reducerRow = i;
 					multiplier = potentialReducer;
@@ -233,22 +233,25 @@ public class Matrix {
 					multiplier = Math.floor(toReduce / potentialReducer);
 					break;
 				} else if (toReduce - potentialReducer == -1){
-
-				}
-				else if (toReduce == 2 && m[i][col] == -1) {
-					subtractRows(row, i, -1);
-					break;
-				} else if (toReduce % m[i][col] == -1) {
 					multiplyRow(row, -1);
-					subtractRows(row, i, Math.floor(-toReduce / m[i][col]));
+					reducerRow = i;
+					multiplier = -potentialReducer;
 					break;
-				} else if (m[i][col] == 1) {
-					subtractRows(row, i, toReduce - 1);
+				} else if (toReduce % potentialReducer == -1) {
+					multiplyRow(row, -1);
+					reducerRow = i;
+					multiplier = Math.floor(toReduce / -potentialReducer);
+					break;
+				} else if (potentialReducer == 1) {
+					reducerRow = i;
+					multiplier = potentialReducer - 1;
 					break;
 				}
 			}
+			if (reducerRow != -1){
+				subtractRows(row, reducerRow, multiplier);
+			}
 		}
-
 		makePivotCol(row, col);
 	}
 
