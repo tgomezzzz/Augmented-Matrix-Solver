@@ -4,6 +4,7 @@ public class Matrix {
 
 	public Matrix() {
 		loadMatrix();
+		orderByZeroes();
 	}
 
 	private double[][] m;
@@ -22,19 +23,13 @@ public class Matrix {
 	 * @return true if the matrix if in RREF form, false if not
 	 */
 	public boolean isRREF() {
-		// check indices of 1s, making sure they form a staircase
-		// check that everything else in the col is 0
-
-		// scan matrix row by row
-		// at the first non-zero or non-one value, call method to eliminate it and put
-		// that row into RREF form
 
 		// detects a matrix with no solutions
 		if (pivotEntries.containsKey(NUM_COLS - 1)) {
 			return true;
 		}
 
-		List<Integer> pivotCols = new ArrayList<Integer>();
+		List<Integer> pivotColCheck = new ArrayList<Integer>();
 		for (int i = 0; i < NUM_ROWS; i++) {
 			for (int j = 0; j < NUM_COLS; j++) {
 				// if the current element is a 1...
@@ -47,9 +42,10 @@ public class Matrix {
 					}
 					// otherwise, the current element is a pivot entry, so remember it's column, and
 					// continue looking in the next row
-					pivotCols.add(j);
+					pivotColCheck.add(j);
 					break;
-					// if the element is not a 1 or a 0...
+				
+				// if the element is not a 1 or a 0...
 				} else if (m[i][j] != 0) {
 					// reduce the row, and return
 					reduceRow(i, j);
@@ -59,15 +55,15 @@ public class Matrix {
 		}
 
 		int prev = -1;
-		for (int i = 0; i < pivotCols.size(); i++) {
-			if (pivotCols.get(i) <= prev) {
+		for (int i = 0; i < pivotColCheck.size(); i++) {
+			if (pivotColCheck.get(i) <= prev) {
 				orderByZeroes();
 				return false;
 			}
-			if (!isPivotCol(i, pivotCols.get(i))) {
+			if (!isPivotCol(i, pivotColCheck.get(i))) {
 				return false;
 			}
-			prev = pivotCols.get(i);
+			prev = pivotColCheck.get(i);
 		}
 
 		return true;
@@ -147,8 +143,8 @@ public class Matrix {
 							sol.append("-");
 						}
 						sol.append(fmt(-rowSol[NUM_COLS - 1]));
-					} else {
-						sol.append("0");
+					} else if (!firstEntrySeen) {
+					 	sol.append("0");
 					}
 					System.out.println(sol.toString());
 				} else {
@@ -364,7 +360,7 @@ public class Matrix {
 
 			String input = s.nextLine();
 			String[] inputs = input.split(" ");
-			final int ROW_SIZE = inputs.length;
+			int ROW_SIZE = inputs.length;
 			double sum = 0;
 			while (!input.equals("d")) {
 				try {
@@ -392,7 +388,7 @@ public class Matrix {
 				continue;
 			}
 
-			System.out.println("Is this the correct augmented matrix?");
+			System.out.println("\nIs this the correct augmented matrix?");
 			for (List<Double> r : rows) {
 				for (int i = 0; i < r.size(); i++) {
 					System.out.print(fmt(r.get(i)) + " ");
@@ -403,7 +399,7 @@ public class Matrix {
 				System.out.println();
 			}
 
-			System.out.println("Enter [y] to solve, or anything else to re-enter the matrix");
+			System.out.println("\nEnter [y] to solve, or anything else to re-enter the matrix");
 			input = s.nextLine();
 
 			if (input.equals("y")) {
@@ -414,6 +410,8 @@ public class Matrix {
 				}
 			}
 		}
+
+		System.out.println();
 
 		NUM_ROWS = rows.size();
 		NUM_COLS = rows.get(0).size();
