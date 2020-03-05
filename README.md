@@ -1,4 +1,4 @@
-# augmented-matrix-solver
+# Gauss-Jordan Elimination Calculator
 
 How to use:
 
