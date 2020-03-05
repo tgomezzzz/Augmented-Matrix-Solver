@@ -1,5 +1,7 @@
 # Gauss-Jordan Elimination Calculator
 
+This program solves systems of equations, represented by an augmented matrix, using Gauss-Jordan Elimination.
+
 How to use:
 
 Upon executing the program, enter each value of the matrix's first row separated by a space.
