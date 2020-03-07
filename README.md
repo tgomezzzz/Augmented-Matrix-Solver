@@ -1,6 +1,6 @@
 # Gauss-Jordan Elimination Calculator
 
-This program solves systems of equations, represented by an augmented matrix, using Gauss-Jordan Elimination.
+This program solves systems of equations, represented as an augmented matrix, using Gauss-Jordan Elimination.
 
 How to use:
 
